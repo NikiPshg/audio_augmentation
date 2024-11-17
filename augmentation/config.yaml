@@ -1,0 +1,27 @@
+use:
+  use_rir: True
+  use_noise: True
+  use_codec: True
+
+codecs:
+  8_bit_mu_law:
+    format: wav
+    encoder: pcm_mulaw
+  G.722:
+    format: g722
+  Vorbis:
+    format: ogg
+    encoder: vorbis
+
+probs:
+  rir_prob: 0.9
+  noise_prob: 0.9
+  codec_prob: 0.9
+
+paths:
+  noise_path: C:/Users/RedmiBook/Documents/GitHub/audio_augmentation/noise/noise
+  rir_path: C:/Users/RedmiBook/Documents/GitHub/audio_augmentation/noise/rir
+
+snr_range: 
+  min: 5
+  max: 30
