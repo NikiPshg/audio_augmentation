@@ -25,3 +25,15 @@ paths:
 snr_range: 
   min: 5
   max: 30
+
+room_info:
+  x_max: 20
+  z_max: 5
+
+  x_min: 10
+  z_min: 2 
+
+  src_pos: [1,1,1]
+  micr_pos: [1,0.7,1.2]
+
+
