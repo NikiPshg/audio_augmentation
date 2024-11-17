@@ -1,9 +1,9 @@
-8_bit_mu_law:
-  format: wav
-  encoder: pcm_mulaw
-G.722:
-  format: g722
-  encoder: None
-Vorbis:
-  format: ogg
-  encoder: vorbis
+codecs:
+  8_bit_mu_law:
+    format: wav
+    encoder: pcm_mulaw
+  G.722:
+    format: g722
+  Vorbis:
+    format: ogg
+    encoder: vorbis
