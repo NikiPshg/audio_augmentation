@@ -1,0 +1,5 @@
+/venv
+*.ipynb 
+.idea
+*__pycache__*
+**.wav
