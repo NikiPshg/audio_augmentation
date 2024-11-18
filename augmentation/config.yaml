@@ -3,6 +3,7 @@ use:
   use_noise: True
   use_codec: True
   use_spectr: True
+  use_phone: True
 
 codecs:
   8_bit_mu_law:
@@ -28,9 +29,10 @@ probs:
   noise_prob: 1
   codec_prob: 1
   specrt_prob: 1
+  phone_prob: 1
 
 paths:
-  noise_path: C:/Users/RedmiBook/Documents/GitHub/audio_augmentation/noise/noise
+  noise_path: ... # path
 
 snr_range: 
   min: 5

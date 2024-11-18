@@ -7,6 +7,7 @@ from utils import get_audio_paths, align_waveform
 import pyroomacoustics as pra
 import numpy as np
 from tqdm import tqdm
+import torchaudio.functional as F
 
 
 class Degrader():
@@ -14,13 +15,14 @@ class Degrader():
         if not(cfg_path):
              raise RuntimeError
         
-        with open('augmentation/config.yaml', 'r') as f:
+        with open(cfg_path, 'r') as f:
             self.yaml = yaml.load(f, Loader=yaml.SafeLoader)
 
         self.use_rir = self.yaml['use']['use_rir']
         self.use_noise = self.yaml['use']['use_noise']
         self.use_codec = self.yaml['use']['use_codec']
         self.use_spectr = self.yaml['use']['use_spectr']
+        self.use_phone = self.yaml['use']['use_phone']
 
         self.snr_min = self.yaml['snr_range']['min']
         self.snr_max = self.yaml['snr_range']['max']
@@ -118,23 +120,36 @@ class Degrader():
             waveform = effector.apply(waveform, sample_rate)
 
         return waveform.T
+    
+    def _add_phone(self, waveform, sample_rate):
+        waveform = waveform.T
+        effect = ",".join(
+            [
+                "lowpass=frequency=4000:poles=1",
+                "compand=attacks=0.02:decays=0.05:points=-60/-60|-30/-10|-20/-8|-5/-8|-2/-8:gain=-8:volume=-7:delay=0.05",
+            ]
+        )
+        effector = AudioEffector(effect=effect,format="g722")
+        return effector.apply(waveform, sample_rate).T
 
     def __call__(self, waveform, sample_rate):
+        codec = False
 
         if random.random() < self.yaml['probs']['rir_prob'] and self.use_rir:
-            print("rir")
             waveform = self._add_rir(waveform, sample_rate)
 
         if random.random() < self.yaml['probs']['noise_prob'] and self.use_noise:
-            print("noise")
             waveform = self._add_noise(waveform, sample_rate)
 
         if random.random() < self.yaml['probs']['codec_prob'] and self.use_codec:
-            print("codec")
+            codec = True
             waveform = self._add_codec(waveform, sample_rate)
         
         if random.random() < self.yaml['probs']['specrt_prob'] and self.use_spectr:
-            print("spec")
             waveform = self._apply_sp_deg(waveform, sample_rate)
-        
+
+        if random.random() < self.yaml['probs']['phone_prob'] and self.use_phone and not(codec):
+            print('phone')
+            waveform = self._apply_sp_deg(waveform, sample_rate)
+        waveform = self._add_phone(waveform=waveform, sample_rate=sample_rate)
         return waveform
