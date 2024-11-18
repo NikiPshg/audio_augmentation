@@ -1,7 +1,6 @@
 import torch 
 import torchaudio
 from torchaudio.io import AudioEffector
-from sp_degrader import SpDegrader
 import random 
 import yaml
 from utils import get_audio_paths, align_waveform
@@ -29,16 +28,13 @@ class Degrader():
 
         if self.use_rir:
             self.rirs = []
-            self.prepare_rir(10)
+            self.prepare_rir(1)
         
         if self.use_noise:
             self.noise_paths = get_audio_paths(self.yaml['paths']['noise_path'])
 
         if self.use_codec:
             self.codecs = list(self.yaml['codecs'].keys())
-        
-        if self.use_spectr:
-            self.sp_degrader = SpDegrader(cfg_path)
 
     def _add_codec(
             self,
@@ -111,6 +107,17 @@ class Degrader():
             waveform=waveform, noise=noise, snr=torch.tensor([snr])
         )
         return augmented
+    
+    def _apply_sp_deg(self, waveform, sample_rate):
+        waveform = waveform.T
+        num_aug = random.randint(0, self.yaml['spectrogramm']['num_aug'])
+
+        for _ in range(num_aug):
+            effect = random.choice( self.yaml['spectrogramm']['effects'])
+            effector = AudioEffector(effect=effect, pad_end=True)
+            waveform = effector.apply(waveform, sample_rate)
+
+        return waveform.T
 
     def __call__(self, waveform, sample_rate):
 
@@ -128,6 +135,14 @@ class Degrader():
         
         if random.random() < self.yaml['probs']['specrt_prob'] and self.use_spectr:
             print("spec")
-            waveform = self.sp_degrader(waveform, sample_rate)
+            waveform = self._apply_sp_deg(waveform, sample_rate)
         
         return waveform
+
+
+wav, sr = torchaudio.load('C:/Users/RedmiBook/Documents/GitHub/audio_augmentation/segment_12(1).wav')
+print(wav.shape)
+degraded = Degrader('augmentation/config.yaml')
+degraded_wav = degraded(waveform=wav, sample_rate=sr)
+print(degraded_wav.shape)
+torchaudio.save("output.wav", degraded_wav, sr)
