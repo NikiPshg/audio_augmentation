@@ -131,15 +131,3 @@ class Degrader():
             waveform = self.sp_degrader(waveform, sample_rate)
         
         return waveform
-
-
-
-
-
-wav, sr = torchaudio.load('C:/Users/RedmiBook/Documents/GitHub/audio_augmentation/segment_163.wav')
-print(wav.shape)
-degraded = Degrader('augmentation/config.yaml')
-degraded_wav = degraded(waveform=wav, sample_rate=sr)
-print(degraded_wav.shape)
-torchaudio.save("output.wav", degraded_wav, sr)
-

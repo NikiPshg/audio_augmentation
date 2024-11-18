@@ -1,0 +1,5 @@
+torchaudio==2.5.1
+torch==2.5.1
+tqdm==4.67.0
+numpy==2.0.1
+pyroomacoustics==0.8.2
