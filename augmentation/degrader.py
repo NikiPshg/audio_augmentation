@@ -1,32 +1,16 @@
 import torch 
 import torchaudio
 from torchaudio.io import AudioEffector
+from sp_degrader import SpDegrader
 import random 
 import yaml
-from utils import get_audio_paths
+from utils import get_audio_paths, align_waveform
 import pyroomacoustics as pra
 import numpy as np
 from tqdm import tqdm
 
 
-def align_waveform(wav1, wav2):
-    assert wav2.size(1) >= wav1.size(1)
-    diff = wav2.size(1) - wav1.size(1)
-    min_mse = float("inf")
-    best_i = -1
-
-    for i in range(diff):
-        segment = wav2[:, i : i + wav1.size(1)]
-        mse = torch.mean((wav1 - segment) ** 2).item()
-        if mse < min_mse:
-            min_mse = mse
-            best_i = i
-
-    return best_i, wav2[:, best_i : best_i + wav1.size(1)]
-
-
-
-class Degraded():
+class Degrader():
     def __init__(self,cfg_path:None):
         if not(cfg_path):
              raise RuntimeError
@@ -37,21 +21,24 @@ class Degraded():
         self.use_rir = self.yaml['use']['use_rir']
         self.use_noise = self.yaml['use']['use_noise']
         self.use_codec = self.yaml['use']['use_codec']
+        self.use_spectr = self.yaml['use']['use_spectr']
 
         self.snr_min = self.yaml['snr_range']['min']
         self.snr_max = self.yaml['snr_range']['max']
         
-        self.rirs = []
-        self.prepare_rir(10)
 
         if self.use_rir:
-            self.rir_paths = get_audio_paths(self.yaml['paths']['rir_path'])
+            self.rirs = []
+            self.prepare_rir(10)
         
         if self.use_noise:
             self.noise_paths = get_audio_paths(self.yaml['paths']['noise_path'])
 
         if self.use_codec:
             self.codecs = list(self.yaml['codecs'].keys())
+        
+        if self.use_spectr:
+            self.sp_degrader = SpDegrader(cfg_path)
 
     def _add_codec(
             self,
@@ -128,14 +115,21 @@ class Degraded():
     def __call__(self, waveform, sample_rate):
 
         if random.random() < self.yaml['probs']['rir_prob'] and self.use_rir:
+            print("rir")
             waveform = self._add_rir(waveform, sample_rate)
 
         if random.random() < self.yaml['probs']['noise_prob'] and self.use_noise:
+            print("noise")
             waveform = self._add_noise(waveform, sample_rate)
 
         if random.random() < self.yaml['probs']['codec_prob'] and self.use_codec:
+            print("codec")
             waveform = self._add_codec(waveform, sample_rate)
-
+        
+        if random.random() < self.yaml['probs']['specrt_prob'] and self.use_spectr:
+            print("spec")
+            waveform = self.sp_degrader(waveform, sample_rate)
+        
         return waveform
 
 
@@ -144,7 +138,7 @@ class Degraded():
 
 wav, sr = torchaudio.load('C:/Users/RedmiBook/Documents/GitHub/audio_augmentation/segment_163.wav')
 print(wav.shape)
-degraded = Degraded('augmentation/config.yaml')
+degraded = Degrader('augmentation/config.yaml')
 degraded_wav = degraded(waveform=wav, sample_rate=sr)
 print(degraded_wav.shape)
 torchaudio.save("output.wav", degraded_wav, sr)
