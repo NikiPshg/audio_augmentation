@@ -28,7 +28,7 @@ class Degrader():
 
         if self.use_rir:
             self.rirs = []
-            self.prepare_rir(1)
+            self.prepare_rir(self.yaml['room_info']['count'])
         
         if self.use_noise:
             self.noise_paths = get_audio_paths(self.yaml['paths']['noise_path'])
@@ -138,11 +138,3 @@ class Degrader():
             waveform = self._apply_sp_deg(waveform, sample_rate)
         
         return waveform
-
-
-wav, sr = torchaudio.load('C:/Users/RedmiBook/Documents/GitHub/audio_augmentation/segment_12(1).wav')
-print(wav.shape)
-degraded = Degrader('augmentation/config.yaml')
-degraded_wav = degraded(waveform=wav, sample_rate=sr)
-print(degraded_wav.shape)
-torchaudio.save("output.wav", degraded_wav, sr)
