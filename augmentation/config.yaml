@@ -24,10 +24,10 @@ codecs:
   
 
 probs:
-  rir_prob: 0.9
-  noise_prob: 0.9
-  codec_prob: 0.9
-  specrt_prob: 0.9
+  rir_prob: 1
+  noise_prob: 1
+  codec_prob: 1
+  specrt_prob: 1
 
 paths:
   noise_path: C:/Users/RedmiBook/Documents/GitHub/audio_augmentation/noise/noise
