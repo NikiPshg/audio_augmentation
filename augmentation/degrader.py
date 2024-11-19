@@ -149,7 +149,5 @@ class Degrader():
             waveform = self._apply_sp_deg(waveform, sample_rate)
 
         if random.random() < self.yaml['probs']['phone_prob'] and self.use_phone and not(codec):
-            print('phone')
-            waveform = self._apply_sp_deg(waveform, sample_rate)
-        waveform = self._add_phone(waveform=waveform, sample_rate=sample_rate)
+            waveform = self._add_phone(waveform, sample_rate)
         return waveform
