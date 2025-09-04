@@ -15,6 +15,14 @@ def align_waveform(wav1, wav2):
             best_i = i
 
     return best_i, wav2[:, best_i : best_i + wav1.size(1)]
-def get_audio_paths(path: str):
-    start_dir = Path(path).resolve()
-    return list(start_dir.rglob('*.wav'))
+    
+def get_audio_paths(podcast_path: str):
+    podcast_path=Path(podcast_path)
+    return (
+        list(podcast_path.rglob("*.mp3"))  + \
+        list(podcast_path.rglob("*.wav"))  + \
+        list(podcast_path.rglob("*.flac")) + \
+        list(podcast_path.rglob("*.ogg"))  + \
+        list(podcast_path.rglob("*.opus"))      
+            
+    )

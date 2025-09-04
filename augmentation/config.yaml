@@ -1,51 +1,49 @@
 use:
-  use_rir: True
+  use_rir: False
   use_noise: True
-  use_codec: True
-  use_spectr: True
-  use_phone: True
+  use_codec: False
+  use_spectr: False
+  use_phone: False
 
 codecs:
   8_bit_mu_law:
     format: wav
     encoder: pcm_mulaw
-
   G.722:
     format: g722
-
   ogg2:
     format: ogg
     encoder: opus
-  
   ogg3:
     format: ogg
-
   mp3:
     format: mp3
-  
 
 probs:
-  rir_prob: 1
-  noise_prob: 1
-  codec_prob: 1
-  specrt_prob: 1
-  phone_prob: 1
+  rir_prob: 0.0
+  noise_prob: 1.0
+  codec_prob: 0.0
+  specrt_prob: 0.0
+  phone_prob: 0.0
 
 paths:
-  noise_path: ... # path
+  noise_path: /home/nikita/audio_detect/datasets/yandex_music # path
 
 snr_range: 
-  min: 5
+  min: 2
   max: 30
+
+noise_segment:
+  min_length_ratio: 0.2  
+  max_length_ratio: 1.0 
+  max_preloaded: 1000
 
 room_info:
   count: 100
   x_max: 20
   z_max: 5
-
   x_min: 10
   z_min: 2 
-
   src_pos: [1,1,1]
   micr_pos: [1,0.7,1.2]
 
@@ -63,8 +61,4 @@ spectrogramm:
     flanger,
     aphaser,
     haas
-  ] 
-
-
-
-
+  ]
