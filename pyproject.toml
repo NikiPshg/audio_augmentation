@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "audio-augmentation"
+version = "0.2.0"
+description = "Fast, DataLoader-safe audio degradation pipeline: noise, synthetic RIR, codecs, spectral effects, phone channel"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+    "torch>=2.6",
+    "torchaudio>=2.6",
+    "torchcodec>=0.2",
+    "PyYAML>=6.0",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Topic :: Multimedia :: Sound/Audio",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

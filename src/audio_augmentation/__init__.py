@@ -1,5 +1,7 @@
-from .codecs import Codecs
+from .config import DEFAULT_CONFIG, load_config
 from .degrader import Degrader
-from .utils import align_waveform, get_audio_paths
+from .effects import EFFECTS
+from .utils import get_audio_paths
 
-__all__ = ["Codecs", "Degrader", "align_waveform", "get_audio_paths"]
+__version__ = "0.2.0"
+__all__ = ["Degrader", "DEFAULT_CONFIG", "load_config", "EFFECTS", "get_audio_paths"]
